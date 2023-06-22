@@ -1,0 +1,10 @@
+<h1> {{ today_name}}</h1>
+<ul>
+    {% for day in days%}
+        {% if day.fecha == today %}
+        <li><strong>{{day.id}} - {{day.fecha}}</strong></li>
+        {% else %}
+        <li>{{day.id}} - {{day.fecha}}</li>
+        {% endif %}
+    {% endfor %}
+</ul>
