@@ -28,6 +28,8 @@ class Move(models.Model):
 
     realizado = models.BooleanField(default=False)
 
+    comentario = models.TextField(blank=True, null=True)
+
 
     created_at = models.DateField(auto_now_add=True)
     #FK
@@ -37,7 +39,7 @@ class Move(models.Model):
         return f'{self.tipo} - {self.day_move} : S/ {self.valor}'
 
 class History(models.Model):
-    move = models.ManyToManyField(Move, blank=True)
-    saldo_ayer = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    gastos_hoy = models.DecimalField(max_digits=10, decimal_places=2,  null=True, blank=True)
+    Day = models.ForeignKey(Day, on_delete=models.CASCADE)
+    egresos_hoy = models.DecimalField(max_digits=10, decimal_places=2,  null=True, blank=True)
+    ingresos_hoy = models.DecimalField(max_digits=10, decimal_places=2,  null=True, blank=True)
     saldo_hoy = models.DecimalField(max_digits=10, decimal_places=2,  null=True, blank=True)

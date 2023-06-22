@@ -17,16 +17,16 @@
 
         <div class="d-flex justify-content-between align-items-center m-2">
             <div>
-                <a href="{% url 'ver_dia' today.id %}" class=" btn btn-primary material-icons">arrow_back_ios</a>
-                <p>{{today.id}}</p>
+                <a href="{% url 'ver_dia' back_day %}" class=" btn btn-primary material-icons">arrow_back_ios</a>
+                <p>{{back_day}}</p>
 
             </div>
             <div>
                 <h1 class="display-5">{{today.fecha}}</h1>
             </div>
             <div>
-                <a href="{# url 'ver_dia' today.id #}" class=" btn btn-primary material-icons">arrow_forward_ios</a>
-                <p>{{today.id}}</p>
+                <a href="{% url 'ver_dia' next_day %}" class=" btn btn-primary material-icons">arrow_forward_ios</a>
+                <p>{{next_day}}</p>
             </div>
         </div>
 
@@ -40,46 +40,24 @@
             <div class=" text-center m-3">
                 <div class="list-group" data-bs-spy="scroll">
                     <h1 class="display-6 text-center mt-2">Transacciones de hoy</h1>
+
                     <hr>
-                    <a href="#" class="list-group-item list-group-item-action list-group-item-danger" aria-current="true">
-                        <div class="d-flex w-100 justify-content-between">
-                            <span class="material-icons">directions_car</span>
-                            <h5 class="mb-1">Pasaje</h5>
-                            <strong>- S/ 2.50</strong>
-                        </div>
-                    </a>
 
+                    {% for history in list_history %}
+                    {% if history.tipo == 'EGRESO' %}
                     <a href="#" class="list-group-item list-group-item-action list-group-item-danger" aria-current="true">
-                        <div class="d-flex w-100 justify-content-between">
-                            <span class="material-icons">directions_car</span>
-                            <h5 class="mb-1">Pasaje</h5>
-                            <strong>- S/ 2.50</strong>
-                        </div>
-                    </a>
-
-                    <a href="#" class="list-group-item list-group-item-action list-group-item-danger" aria-current="true">
-                        <div class="d-flex w-100 justify-content-between">
-                            <span class="material-icons">restaurant</span>
-                            <h5 class="mb-1">Comida</h5>
-                            <strong>- S/ 15.00</strong>
-                        </div>
-                    </a>
-
-                    <a href="#" class="list-group-item list-group-item-action list-group-item-danger" aria-current="true">
-                        <div class="d-flex w-100 justify-content-between">
-                            <span class="material-icons">directions_car</span>
-                            <h5 class="mb-1">Pasaje</h5>
-                            <strong>- S/ 2.50</strong>
-                        </div>
-                    </a>
-
+                    {% else %}
                     <a href="#" class="list-group-item list-group-item-action list-group-item-success" aria-current="true">
+                    {% endif %}
                         <div class="d-flex w-100 justify-content-between">
-                            <span class="material-icons">payments</span>
-                            <h5 class="mb-1">Transferencia</h5>
-                            <strong>S/ 30.00</strong>
+                            <span class="material-icons">directions_car</span>
+                            {% if history.comentario != None %}
+                            <h5 class="mb-1">{{ history.comentario}}</h5>
+                            {% endif %}
+                            <strong>{{ history.valor }}</strong>
                         </div>
-                    </a>           
+                    </a>
+                    {% endfor %}      
 
                 </div>
             </div>
@@ -95,13 +73,16 @@
             <div class="card-body">
                 <div class="d-flex flex-column align-items-center">
                     <div>
-                        <p><strong>Saldo de ayer:</strong> S/ 50.00</p>
+                        <p><strong>Saldo de ayer:</strong> {{ saldo_ayer }}</p>
                     </div>
                     <div>
-                        <p><strong>Gastos del d&iacute;a:</strong> - S/ 2.50</p>
+                        <p><strong>Gastos del d&iacute;a:</strong> {{ egresos }}</p>
                     </div>
                     <div>
-                        <p><strong>Saldo del d&iacute;a:</strong> S/ 15.00</p>
+                        <p><strong>Ingresos del d&iacute;a:</strong> {{ ingresos }}</p>
+                    </div>                    
+                    <div>
+                        <p><strong>Saldo del d&iacute;a:</strong> {{ saldo_hoy }}</p>
                     </div>
                 </div>
             </div>
@@ -109,5 +90,6 @@
 
     </div>
 </body>
-<p>{{ list_history}}</p>
+<p>{{ egresos }}</p>
+<p>{{ ingresos }}</p>
 </html>
