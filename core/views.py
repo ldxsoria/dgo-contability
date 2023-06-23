@@ -45,6 +45,17 @@ def nombre_del_dia(fecha):
 
 
 def ver_dia(request, day_id=None):
+
+    ##################################
+    ## SI NO EXISTE NINGUN DIA, CREA #
+    start = Day.objects.exists()
+    if start  == True:
+        pass
+    else:
+        crear = crear_dias(request)
+    #################################
+
+
     fecha_actual = date.today()
     # Obtener el objeto Dia correspondiente a la fecha actual
     dia_actual = Day.objects.get(fecha=fecha_actual)
@@ -94,24 +105,24 @@ def ver_dia(request, day_id=None):
     return render(request, 'app.html', context)
 
 
-class GenerarHistorico():
-    dia_actual = Day.objects.get(id=173)
+# class GenerarHistorico():
+#     dia_actual = Day.objects.get(id=173)
 
 
-    def Gen_saldo_hoy(self):
-        pass
+#     def Gen_saldo_hoy(self):
+#         pass
 
-    def Gen_suma_ingresos(self):
-        pass
+#     def Gen_suma_ingresos(self):
+#         pass
 
     
-    def Gen_suma_egresos(self):
-        egresos = Move.objects.select_related('day_move').filter(day_move=self.dia_actual, tipo='EGRESO').values_list('valor')
-        suma_egresos = 0
-        for e in egresos:
-            suma_egresos += e[0]
+#     def Gen_suma_egresos(self):
+#         egresos = Move.objects.select_related('day_move').filter(day_move=self.dia_actual, tipo='EGRESO').values_list('valor')
+#         suma_egresos = 0
+#         for e in egresos:
+#             suma_egresos += e[0]
         
-        return suma_egresos
+#         return suma_egresos
     
 
 
