@@ -99,7 +99,7 @@ def ver_dia(request, day_id=None):
     print(historial.suma_egresos)
     print(historial.saldo_hoy)
     print(historial.gen_history)
-    print(f'Respueta automatica: {historial}')
+    print(f'Respueta automatica: {historial.saldo_ayer}')
 
 
     yesterday_id = int(dia_actual.id) - 1
@@ -117,7 +117,7 @@ def ver_dia(request, day_id=None):
         'today_name': nombre,
         'egresos' : historial.suma_egresos,
         'ingresos': historial.suma_ingresos,
-        'saldo_ayer' : saldo_ayer,
+        'saldo_ayer' : historial.saldo_ayer,
         'saldo_hoy' : historial.saldo_hoy,
         'list_history': list_history
     }
@@ -167,7 +167,17 @@ class GenerarHistorico():
 
 
     def Get_saldo_ayer(self):
-        return Decimal(0)
+        day_anterior_id = int(self.day.id) - 1
+        day_anterior = Day.objects.get(id=day_anterior_id)
+        history_anterior_exist = History.objects.filter(day=day_anterior).exists()
+
+        if history_anterior_exist:
+            history_anterior = History.objects.get(day=day_anterior)
+            saldo_ayer = history_anterior.saldo_hoy
+        else:
+            saldo_ayer = 0
+
+        return Decimal(saldo_ayer)
 
 
     def Gen_suma_ingresos(self):
