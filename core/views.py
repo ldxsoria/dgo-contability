@@ -83,46 +83,93 @@ def ver_dia(request, day_id=None):
         suma_ingresos += e[0]    
 
 
-    saldo_ayer = Decimal(30)
+    saldo_ayer = Decimal(0)
 
     saldo_hoy = (saldo_ayer + suma_ingresos) + suma_egresos
 
     #LISTA HISTORIAL DEL DIA
     list_history = Move.objects.select_related('day_move').filter(day_move=dia_actual)
 
+
+    #################################################
+    ############# TEST CLASS
+    historial = GenerarHistorico(dia_actual)
+    print('#' * 20)
+    print(historial.suma_ingresos)
+    print(historial.suma_egresos)
+    print(historial.saldo_hoy)
+    print(historial.gen_history)
+
+    #################################################
+
     context = {
         'today' : dia_actual,
         'next_day': int(dia_actual.id) + 1,
         'back_day': int(dia_actual.id) - 1,
         'today_name': nombre,
-        'egresos' : suma_egresos,
-        'ingresos': suma_ingresos,
+        'egresos' : historial.suma_egresos,
+        'ingresos': historial.suma_ingresos,
         'saldo_ayer' : saldo_ayer,
-        'saldo_hoy' : saldo_hoy,
+        'saldo_hoy' : historial.saldo_hoy,
         'list_history': list_history
     }
 
     return render(request, 'app.html', context)
 
 
-# class GenerarHistorico():
-#     dia_actual = Day.objects.get(id=173)
+class GenerarHistorico():
+    # dia_actual = Day.objects.get(id=173)
+
+    def __init__(self, day):
+        self.day = day
+        self.suma_ingresos = self.Gen_suma_ingresos()
+        self.suma_egresos = self.Gen_suma_egresos()
+        self.saldo_ayer = self.Get_saldo_ayer()
+        self.saldo_hoy = self.Gen_saldo_hoy()
+        self.gen_history = self.Gen_history()
+
+    def Gen_history(self):
+        history_exist = History.objects.filter(day=self.day).exists()
+
+        if history_exist == True:
+            history_update = History.objects.get(day=self.day)
+            history_update.egresos_hoy = self.suma_egresos
+            history_update.ingresos_hoy = self.suma_egresos
+            history_update.saldo_hoy = self.saldo_hoy
+            history_update.save()
+            return 'Actualizado'
+
+        else:
+            new_history = History(day=self.day, egresos_hoy=self.suma_egresos, ingresos_hoy=self.suma_egresos, saldo_hoy=self.saldo_hoy)
+            new_history.save()
+            return 'Creado'  
+
+        # new_history = History.objects.get(Day_id=self.day.id + 1)
+
+    def Gen_saldo_hoy(self):
+        total = self.suma_ingresos + self.suma_egresos + self.saldo_ayer
+        return Decimal(total)
 
 
-#     def Gen_saldo_hoy(self):
-#         pass
+    def Get_saldo_ayer(self):
+        return Decimal(0)
 
-#     def Gen_suma_ingresos(self):
-#         pass
+    def Gen_suma_ingresos(self):
+        ingresos = Move.objects.select_related('day_move').filter(day_move=self.day, tipo='INGRESO').values_list('valor')
+        suma_ingresos = Decimal(0)
+        for i in ingresos:
+            suma_ingresos += i[0]
+        
+        return Decimal(suma_ingresos)
 
     
-#     def Gen_suma_egresos(self):
-#         egresos = Move.objects.select_related('day_move').filter(day_move=self.dia_actual, tipo='EGRESO').values_list('valor')
-#         suma_egresos = 0
-#         for e in egresos:
-#             suma_egresos += e[0]
+    def Gen_suma_egresos(self):
+        egresos = Move.objects.select_related('day_move').filter(day_move=self.day, tipo='EGRESO').values_list('valor')
+        suma_egresos = Decimal(0)
+        for e in egresos:
+            suma_egresos += e[0]
         
-#         return suma_egresos
+        return Decimal(suma_egresos)
     
 
 
@@ -132,7 +179,5 @@ def ver_dia(request, day_id=None):
     #     solicitante=request.user,
     #     )
     # new_ticket.save()
-
-
-    pass 
+ 
 

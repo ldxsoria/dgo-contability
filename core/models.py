@@ -39,7 +39,7 @@ class Move(models.Model):
         return f'{self.tipo} - {self.day_move} : S/ {self.valor}'
 
 class History(models.Model):
-    Day = models.ForeignKey(Day, on_delete=models.CASCADE)
+    day = models.ForeignKey(Day, on_delete=models.CASCADE)
     egresos_hoy = models.DecimalField(max_digits=10, decimal_places=2,  null=True, blank=True)
     ingresos_hoy = models.DecimalField(max_digits=10, decimal_places=2,  null=True, blank=True)
     saldo_hoy = models.DecimalField(max_digits=10, decimal_places=2,  null=True, blank=True)
