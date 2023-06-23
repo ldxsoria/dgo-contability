@@ -99,13 +99,21 @@ def ver_dia(request, day_id=None):
     print(historial.suma_egresos)
     print(historial.saldo_hoy)
     print(historial.gen_history)
+    print(f'Respueta automatica: {historial}')
 
+
+    yesterday_id = int(dia_actual.id) - 1
+    yesterday = Day.objects.get(id=yesterday_id)
+    historial_yesterday = GenerarHistorico(yesterday)
+    print(f'{yesterday}')
+    print(historial_yesterday.saldo_hoy)
+    
     #################################################
 
     context = {
         'today' : dia_actual,
         'next_day': int(dia_actual.id) + 1,
-        'back_day': int(dia_actual.id) - 1,
+        'back_day': yesterday_id,
         'today_name': nombre,
         'egresos' : historial.suma_egresos,
         'ingresos': historial.suma_ingresos,
@@ -117,8 +125,17 @@ def ver_dia(request, day_id=None):
     return render(request, 'app.html', context)
 
 
+
+class GenerarSaldoAyer():
+    def __init__(self, day):
+        self.day = day
+
+    def Get_saldo_ayer(self):
+
+        pass
+
+
 class GenerarHistorico():
-    # dia_actual = Day.objects.get(id=173)
 
     def __init__(self, day):
         self.day = day
@@ -144,8 +161,6 @@ class GenerarHistorico():
             new_history.save()
             return 'Creado'  
 
-        # new_history = History.objects.get(Day_id=self.day.id + 1)
-
     def Gen_saldo_hoy(self):
         total = self.suma_ingresos + self.suma_egresos + self.saldo_ayer
         return Decimal(total)
@@ -153,6 +168,7 @@ class GenerarHistorico():
 
     def Get_saldo_ayer(self):
         return Decimal(0)
+
 
     def Gen_suma_ingresos(self):
         ingresos = Move.objects.select_related('day_move').filter(day_move=self.day, tipo='INGRESO').values_list('valor')
@@ -172,12 +188,7 @@ class GenerarHistorico():
         return Decimal(suma_egresos)
     
 
-
-    #     new_ticket = Ticket(
-    #     asunto=Asunto.objects.get(id=request.POST['asunto']),
-    #     descripcion=request.POST['descripcion'],
-    #     solicitante=request.user,
-    #     )
-    # new_ticket.save()
+    def __str__(self) :
+        return f'{self.saldo_hoy}'
  
 
