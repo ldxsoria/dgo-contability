@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 # Create your views here.
 from django.http import HttpResponse
@@ -47,7 +47,7 @@ def nombre_del_dia(fecha):
 def ver_dia(request, day_id=None):
 
     ##################################
-    ## SI NO EXISTE NINGUN DIA, CREA #
+    ## SI NO EXISTE NINGUN DIA, LOS CREA #
     start = Day.objects.exists()
     if start  == True:
         pass
@@ -109,6 +109,9 @@ def ver_dia(request, day_id=None):
     print(historial_yesterday.saldo_hoy)
     
     #################################################
+    ## FORMULARIO PARA AGREGAR MOVE (TRANSCACCION)
+
+    #################################################
 
     context = {
         'today' : dia_actual,
@@ -122,7 +125,32 @@ def ver_dia(request, day_id=None):
         'list_history': list_history
     }
 
-    return render(request, 'app.html', context)
+
+
+    if request.method == 'GET':
+        return render(request, 'app.html', context)
+    else:
+        if (request.POST['tipo'] == 'INGRESO'):
+            valor_tipo = request.POST['valor']
+        else:
+            valor_negativo = request.POST['valor']
+            valor_negativo = Decimal(valor_negativo) * -1
+            print(valor_negativo)
+            valor_tipo = Decimal(valor_negativo)
+
+        new_move = Move(
+            tipo = request.POST['tipo'],
+            valor = valor_tipo,
+            # realizado = request.POST[''],
+            # comentario = request.POST[''],
+            day_move = dia_actual
+        )
+        new_move.save()
+
+
+
+        # return redirect(request, 'app.html', context)
+        return redirect(request.path)
 
 
 
